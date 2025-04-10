@@ -5,7 +5,14 @@ import {styles} from './styles';
 
 const renderItem = ({item}: {item: {title: string}}) => (
   <View style={styles.item}>
-    <Text style={{fontSize: 16, textAlign: 'center', fontWeight: 600}}>{item.title}</Text>
+    <Text
+      style={{
+        fontSize: 16,
+        textAlign: 'center',
+        fontWeight: 600,
+      }}>
+      {item.title}
+    </Text>
     <View style={{height: 1, backgroundColor: 'black'}} />
   </View>
 );
@@ -13,7 +20,6 @@ const renderItem = ({item}: {item: {title: string}}) => (
 const Track: FC = () => {
   const {data} = useGetAllPostsQuery();
   console.log(data);
-
 
   return (
     <View style={styles.container}>
