@@ -38,31 +38,35 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
   const [filteredWarehouses, setFilteredWarehouses] = useState<any[]>([]);
 
   const {data, isLoading, error} = useGetWarehousesQuery(
-    {
-      cityRef,
-      warehouseType: selectedType,
-    },
-    {
-      skip: !cityRef,
-    },
+    {cityRef},
+    {skip: !cityRef},
   );
 
   useEffect(() => {
     if (data?.data) {
       const filtered = data.data.filter(warehouse => {
+        const matchesType =
+          !selectedType || warehouse.TypeOfWarehouse === selectedType;
+
         const query = searchQuery.toLowerCase();
         const matchesNumber = warehouse.Number.toLowerCase().includes(query);
         const matchesAddress =
           warehouse.ShortAddress.toLowerCase().includes(query);
         const matchesDescription =
           warehouse.Description.toLowerCase().includes(query);
+
         return (
-          !searchQuery || matchesNumber || matchesAddress || matchesDescription
+          matchesType &&
+          (!searchQuery ||
+            matchesNumber ||
+            matchesAddress ||
+            matchesDescription)
         );
       });
+
       setFilteredWarehouses(filtered);
     }
-  }, [data?.data, searchQuery]);
+  }, [data?.data, selectedType, searchQuery]);
 
   const getDayName = (): DayOfWeek => {
     const dayIndex = new Date().getDay();
@@ -93,7 +97,6 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
     {label: 'All', value: undefined},
     {label: 'Post Offices', value: WarehouseType.BRANCH},
     {label: 'Cargo Offices', value: WarehouseType.CARGO},
-    {label: 'Parcel Lockers', value: WarehouseType.PARCEL_LOCKER},
     {label: 'Postomats', value: WarehouseType.POSTOMAT},
   ];
 

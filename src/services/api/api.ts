@@ -18,7 +18,6 @@ export const novaPostApi = createApi({
       query: () => '/posts',
     }),
 
-    // Add search cities endpoint
     searchCities: builder.mutation<SearchSettlementsResponse, string>({
       query: cityName => ({
         url: '',
@@ -39,8 +38,8 @@ export const novaPostApi = createApi({
       WarehouseResponse,
       {cityRef: string; warehouseType?: string}
     >({
-      query: ({cityRef, warehouseType}) => {
-        console.log('Request parameters:', {cityRef, warehouseType});
+      query: ({cityRef}) => {
+        console.log('Loading warehouses for city:', cityRef);
         return {
           url: '',
           method: 'POST',
@@ -50,16 +49,12 @@ export const novaPostApi = createApi({
             calledMethod: 'getWarehouses',
             methodProperties: {
               SettlementRef: cityRef,
-              TypeOfWarehouseRef: warehouseType,
               Language: 'UA',
             },
           } as NovaPoshtaRequest<WarehouseProps>,
         };
       },
-      transformResponse: (response: WarehouseResponse) => {
-        console.log('Raw API response:', JSON.stringify(response, null, 2));
-        return response;
-      },
+      keepUnusedDataFor: 600,
     }),
   }),
 });
