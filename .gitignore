@@ -144,3 +144,5 @@ coverage
 reports
 
 vendor
+
+.env
