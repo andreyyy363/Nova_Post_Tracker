@@ -1,4 +1,4 @@
-import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import {
   Post,
   NovaPoshtaRequest,
@@ -6,13 +6,21 @@ import {
   SearchSettlementsResponse,
   WarehouseProps,
   WarehouseResponse,
+  TrackDocumentResponse,
+  TrackDocumentProps,
 } from './types';
 
 const API_KEY = process.env.API_KEY || '';
 
+// Определение интерфейса для параметров trackDocument
+interface TrackDocumentParams {
+  documentNumber: string;
+  phone?: string;
+}
+
 export const novaPostApi = createApi({
   reducerPath: 'novaPostApi',
-  baseQuery: fetchBaseQuery({baseUrl: 'https://api.novaposhta.ua/v2.0/json/'}),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://api.novaposhta.ua/v2.0/json/' }),
   endpoints: builder => ({
     getAllPosts: builder.query<Post[], void>({
       query: () => '/posts',
@@ -36,9 +44,9 @@ export const novaPostApi = createApi({
 
     getWarehouses: builder.query<
       WarehouseResponse,
-      {cityRef: string; warehouseType?: string}
+      { cityRef: string; warehouseType?: string }
     >({
-      query: ({cityRef}) => {
+      query: ({ cityRef }) => {
         console.log('Loading warehouses for city:', cityRef);
         return {
           url: '',
@@ -56,6 +64,40 @@ export const novaPostApi = createApi({
       },
       keepUnusedDataFor: 600,
     }),
+
+    // Обновленная версия trackDocument для поддержки номера телефона
+    trackDocument: builder.mutation<TrackDocumentResponse, string | TrackDocumentParams>({
+      query: params => {
+        // Определяем, передана строка или объект
+        const isString = typeof params === 'string';
+        const documentNumber = isString ? params : params.documentNumber;
+        const phone = isString ? undefined : params.phone;
+        
+        // Создаем документ для запроса
+        const document: { DocumentNumber: string; Phone?: string } = {
+          DocumentNumber: documentNumber
+        };
+        
+        // Добавляем телефон, если он предоставлен
+        if (phone) {
+          document.Phone = phone;
+        }
+        
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            apiKey: API_KEY,
+            modelName: 'TrackingDocument',
+            calledMethod: 'getStatusDocuments',
+            methodProperties: {
+              Documents: [document],
+              GetFullInfo: true
+            },
+          } as NovaPoshtaRequest<TrackDocumentProps>,
+        };
+      },
+    }),
   }),
 });
 
@@ -63,4 +105,5 @@ export const {
   useGetAllPostsQuery,
   useSearchCitiesMutation,
   useGetWarehousesQuery,
+  useTrackDocumentMutation,
 } = novaPostApi;
