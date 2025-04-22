@@ -15,21 +15,13 @@ import {WarehouseType} from '../services/api/types';
 interface WarehouseListProps {
   cityRef: string;
   onWarehouseSelect?: (warehouse: any) => void;
+  condensedView?: boolean; // new prop for when list is collapsed
 }
-
-// Define a type for days of the week
-type DayOfWeek =
-  | 'Monday'
-  | 'Tuesday'
-  | 'Wednesday'
-  | 'Thursday'
-  | 'Friday'
-  | 'Saturday'
-  | 'Sunday';
 
 const WarehouseList: React.FC<WarehouseListProps> = ({
   cityRef,
   onWarehouseSelect,
+  condensedView = false,
 }) => {
   const [selectedType, setSelectedType] = useState<string | undefined>(
     undefined,
@@ -68,27 +60,18 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
     }
   }, [data?.data, selectedType, searchQuery]);
 
-  const getDayName = (): DayOfWeek => {
+  const getDayName = () => {
     const dayIndex = new Date().getDay();
-
-    switch (dayIndex) {
-      case 0:
-        return 'Sunday';
-      case 1:
-        return 'Monday';
-      case 2:
-        return 'Tuesday';
-      case 3:
-        return 'Wednesday';
-      case 4:
-        return 'Thursday';
-      case 5:
-        return 'Friday';
-      case 6:
-        return 'Saturday';
-      default:
-        return 'Monday';
-    }
+    const days = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+    return days[dayIndex];
   };
 
   const todayName = getDayName();
@@ -120,63 +103,92 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Warehouses in the selected city</Text>
+      {/* Header section with filters always visible */}
+      <View style={styles.headerContainer}>
+        {/* Search input */}
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by number or address..."
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
+          />
+        </View>
 
-      {/* Search input */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search by number or address..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          clearButtonMode="while-editing"
-        />
-      </View>
-
-      {/* Type filter */}
-      <View style={styles.filterContainer}>
-        <FlatList
-          horizontal
-          data={filterOptions}
-          keyExtractor={item => item.label}
-          renderItem={({item}) => (
-            <TouchableOpacity
-              style={[
-                styles.filterButton,
-                selectedType === item.value && styles.filterButtonActive,
-              ]}
-              onPress={() => setSelectedType(item.value)}>
-              <Text
+        {/* Type filter */}
+        <View style={styles.filterContainer}>
+          <FlatList
+            horizontal
+            data={filterOptions}
+            keyExtractor={item => item.label}
+            renderItem={({item}) => (
+              <TouchableOpacity
                 style={[
-                  styles.filterText,
-                  selectedType === item.value && styles.filterTextActive,
-                ]}>
-                {item.label}
-              </Text>
-            </TouchableOpacity>
-          )}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterList}
-        />
+                  styles.filterButton,
+                  selectedType === item.value && styles.filterButtonActive,
+                ]}
+                onPress={() => setSelectedType(item.value)}>
+                <Text
+                  style={[
+                    styles.filterText,
+                    selectedType === item.value && styles.filterTextActive,
+                  ]}>
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            )}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filterList}
+          />
+        </View>
       </View>
 
-      {filteredWarehouses.length === 0 && searchQuery ? (
-        <Text style={styles.messageText}>No matching warehouses found</Text>
-      ) : (
-        <FlatList
-          data={filteredWarehouses}
-          keyExtractor={item => item.Ref}
-          renderItem={({item}) => (
-            <WarehouseCard
-              name={item.Description}
-              address={item.ShortAddress}
-              number={item.Number}
-              schedule={item.Schedule?.[todayName]}
-              onPress={() => onWarehouseSelect && onWarehouseSelect(item)}
+      {/* Only show results count when in condensed view */}
+      {condensedView ? (
+        <>
+          <Text style={styles.countText}>
+            {filteredWarehouses.length} warehouses found
+          </Text>
+          {filteredWarehouses.length > 0 && (
+            <FlatList
+              data={filteredWarehouses.slice(0, 1)} // Take only the first item
+              keyExtractor={item => item.Ref}
+              renderItem={({item}) => (
+                <WarehouseCard
+                  name={item.Description}
+                  address={item.ShortAddress}
+                  number={item.Number}
+                  schedule={item.Schedule?.[todayName]}
+                  onPress={() => onWarehouseSelect && onWarehouseSelect(item)}
+                />
+              )}
+              contentContainerStyle={[styles.listContent, styles.condensedList]}
+              scrollEnabled={false}
             />
           )}
-          contentContainerStyle={styles.listContent}
-        />
+        </>
+      ) : (
+        <View style={styles.listContainer}>
+          {filteredWarehouses.length === 0 && searchQuery ? (
+            <Text style={styles.messageText}>No matching warehouses found</Text>
+          ) : (
+            <FlatList
+              data={filteredWarehouses}
+              keyExtractor={item => item.Ref}
+              renderItem={({item}) => (
+                <WarehouseCard
+                  name={item.Description}
+                  address={item.ShortAddress}
+                  number={item.Number}
+                  schedule={item.Schedule?.[todayName]}
+                  onPress={() => onWarehouseSelect && onWarehouseSelect(item)}
+                />
+              )}
+              contentContainerStyle={styles.listContent}
+            />
+          )}
+        </View>
       )}
     </View>
   );
@@ -185,15 +197,20 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
+  },
+  headerContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 8,
+    backgroundColor: 'white',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 12,
-    marginHorizontal: 16,
   },
   searchContainer: {
-    marginHorizontal: 16,
     marginBottom: 8,
   },
   searchInput: {
@@ -203,6 +220,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     backgroundColor: '#fff',
+  },
+  listContainer: {
+    flex: 1,
   },
   listContent: {
     paddingBottom: 20,
@@ -220,11 +240,17 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: '#666',
   },
+  countText: {
+    textAlign: 'center',
+    paddingVertical: 8,
+    color: '#666',
+    fontSize: 14,
+  },
   filterContainer: {
-    marginBottom: 12,
+    marginBottom: 4,
   },
   filterList: {
-    paddingHorizontal: 16,
+    paddingVertical: 4,
   },
   filterButton: {
     paddingHorizontal: 16,
@@ -242,6 +268,10 @@ const styles = StyleSheet.create({
   filterTextActive: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  condensedList: {
+    maxHeight: 80, // Approximate height of one warehouse card
+    paddingHorizontal: 16,
   },
 });
 
