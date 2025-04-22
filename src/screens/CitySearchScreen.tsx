@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, SafeAreaView} from 'react-native';
+import {View, StyleSheet, SafeAreaView, Modal} from 'react-native';
 import CitySearch from '../components/CitySearchComponent';
 import WarehouseList from '../components/WarehouseListComponent';
+import WarehouseMap from '../components/WarehouseMapComponent';
 
 const CitySearchScreen = () => {
   const [selectedCity, setSelectedCity] = useState<{
@@ -9,10 +10,23 @@ const CitySearchScreen = () => {
     ref: string;
   } | null>(null);
 
-const handleCitySelect = (city: {name: string; ref: string}) => {
-  console.log('Selected city reference:', city.ref);
-  setSelectedCity(city);
-};
+  const [selectedWarehouse, setSelectedWarehouse] = useState<any>(null);
+  const [isMapVisible, setIsMapVisible] = useState(false);
+
+  const handleCitySelect = (city: {name: string; ref: string}) => {
+    console.log('Selected city reference:', city.ref);
+    setSelectedCity(city);
+  };
+
+  const handleWarehouseSelect = (warehouse: any) => {
+    console.log('Selected warehouse:', warehouse);
+    setSelectedWarehouse(warehouse);
+    setIsMapVisible(true);
+  };
+
+  const closeMap = () => {
+    setIsMapVisible(false);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -24,11 +38,18 @@ const handleCitySelect = (city: {name: string; ref: string}) => {
         <View style={styles.warehousesContainer}>
           <WarehouseList
             cityRef={selectedCity.ref}
-            onWarehouseSelect={warehouse => {
-              console.log('Selected warehouse:', warehouse);
-            }}
+            onWarehouseSelect={handleWarehouseSelect}
           />
         </View>
+      )}
+
+      {selectedWarehouse && (
+        <Modal
+          visible={isMapVisible}
+          animationType="slide"
+          onRequestClose={closeMap}>
+          <WarehouseMap warehouse={selectedWarehouse} onClose={closeMap} />
+        </Modal>
       )}
     </SafeAreaView>
   );
