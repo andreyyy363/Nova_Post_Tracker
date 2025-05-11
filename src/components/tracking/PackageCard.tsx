@@ -32,50 +32,52 @@ const PackageCard: React.FC<PackageCardProps> = ({
   const getSenderInfo = (response: TrackingData): string => {
     if (isDemo) return samplePackage.sender;
   
-    const items = response.Items || [];
-  
-    if (!Array.isArray(items) || items.length === 0) {
+    if (!response) {
       return 'Інформація недоступна • Дані відсутні';
     }
   
-    const senderList: string[] = [];
-  
-    for (const item of items) {
-      if (item.StatusCode === "3") continue;
-  
-      const {
-        Sender,
-        SenderFullNameEW,
-        CounterpartySenderDescription,
-        CounterpartySenderType
-      } = item;
-  
-      if (
-        CounterpartySenderDescription &&
-        CounterpartySenderDescription !== "Приватна особа"
-      ) {
-        if (
-          CounterpartySenderType === "Organization" &&
-          SenderFullNameEW &&
-          SenderFullNameEW.trim() !== ''
-        ) {
-          senderList.push(`${CounterpartySenderDescription} (контактна особа: ${SenderFullNameEW.trim()})`);
-        } else {
-          senderList.push(CounterpartySenderDescription);
-        }
-      } else if (SenderFullNameEW && SenderFullNameEW.trim() !== '') {
-        senderList.push(SenderFullNameEW.trim());
-      } else if (Sender && Sender.trim() !== '') {
-        senderList.push(Sender.trim());
+    const senderDesc = (response as any).CounterpartySenderDescription;
+    const senderType = (response as any).CounterpartySenderType;
+    const senderFullName = (response as any).SenderFullNameEW;
+    
+    if (senderDesc && senderDesc !== "Приватна особа") {
+      if (senderType === "Organization" && senderFullName && senderFullName.trim() !== '') {
+        return `${senderDesc} (контактна особа: ${senderFullName.trim()})`;
       }
+      return senderDesc;
     }
-  
-    if (senderList.length === 0) {
-      return 'Інформація прихована • Для повної інформації зверніться до відділення';
+    
+    if (senderFullName && senderFullName.trim() !== '') {
+      return senderFullName.trim();
     }
-  
-    const uniqueSenders = [...new Set(senderList)];
-    return uniqueSenders.join(', ');
+    
+    return 'Інформація прихована • Для повної інформації зверніться до відділення';
+  };
+
+  const getRecipientInfo = (response: TrackingData): string => {
+    if (isDemo) return samplePackage.recipient;
+    
+    if (!response) {
+      return 'Інформація недоступна • Дані відсутні';
+    }
+    
+    const recipientDesc = (response as any).CounterpartyRecipientDescription;
+    const recipientFullName = (response as any).RecipientFullName;
+    const recipientFullNameEW = (response as any).RecipientFullNameEW;
+    
+    if (recipientDesc && recipientDesc !== "Приватна особа") {
+      return recipientDesc;
+    }
+    
+    if (recipientFullNameEW && recipientFullNameEW.trim() !== '') {
+      return recipientFullNameEW.trim();
+    }
+    
+    if (recipientFullName && recipientFullName.trim() !== '') {
+      return recipientFullName.trim();
+    }
+    
+    return 'Інформація прихована • Для повної інформації зверніться до відділення';
   };
   
   return (
@@ -91,7 +93,6 @@ const PackageCard: React.FC<PackageCardProps> = ({
       </View>
       
       <View style={styles.packageDetails}>
-        {/* Основные поля - 3 обязательных поля */}
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Звідки:</Text>
           <Text style={styles.detailValue}>
@@ -111,20 +112,19 @@ const PackageCard: React.FC<PackageCardProps> = ({
           </Text>
         </View>
         
-        {/* Кнопка "Полная информация" */}
-        <TouchableOpacity 
-          style={styles.fullInfoButton}
-          onPress={onFullInfoClick}
-        >
-          <Text style={styles.fullInfoButtonText}>
-            {showFullInfo ? 'Сховати деталі' : 'Повна інформація'}
-          </Text>
-        </TouchableOpacity>
+        {!showFullInfo && (
+          <TouchableOpacity 
+            style={styles.fullInfoButton}
+            onPress={onFullInfoClick}
+          >
+            <Text style={styles.fullInfoButtonText}>
+              Повна інформація
+            </Text>
+          </TouchableOpacity>
+        )}
         
-        {/* Полная информация */}
         {showFullInfo && (
           <>
-            {/* Створено теперь в полной информации */}
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Створено:</Text>
               <Text style={styles.detailValue}>
@@ -139,7 +139,6 @@ const PackageCard: React.FC<PackageCardProps> = ({
               </Text>
             </View>
             
-            {/* Дополнительная информация доступна только если введен номер телефона или это демо */}
             {(hasEnteredPhone || isDemo) && (
               <>
                 <View style={styles.detailRow}>
@@ -149,22 +148,13 @@ const PackageCard: React.FC<PackageCardProps> = ({
                   </Text>
                 </View>
                 
-                {/* Получатель */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Отримувач:</Text>
                   <Text style={styles.detailValue}>
-                    {isDemo 
-                      ? samplePackage.recipient 
-                      : getValueOrDefault(
-                          data.RecipientFullName || 
-                          data.Recipient ||
-                          (data as any).RecipientName,
-                          'Не вказано'
-                        )}
+                    {getRecipientInfo(data)}
                   </Text>
                 </View>
                 
-                {/* Вес, стоимость и описание */}
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Вага:</Text>
                   <Text style={styles.detailValue}>
@@ -205,7 +195,6 @@ const PackageCard: React.FC<PackageCardProps> = ({
               </>
             )}
             
-            {/* Сообщение о необходимости ввода телефона */}
             {!hasEnteredPhone && !isDemo && (
               <TouchableOpacity 
                 style={styles.phonePromptButton}
@@ -216,6 +205,15 @@ const PackageCard: React.FC<PackageCardProps> = ({
                 </Text>
               </TouchableOpacity>
             )}
+            
+            <TouchableOpacity 
+              style={[styles.fullInfoButton, styles.hideInfoButton]}
+              onPress={onFullInfoClick}
+            >
+              <Text style={styles.fullInfoButtonText}>
+                Сховати деталі
+              </Text>
+            </TouchableOpacity>
           </>
         )}
       </View>
@@ -288,6 +286,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 16,
     alignItems: 'center',
+  },
+  hideInfoButton: {
+    marginTop: 24,
   },
   fullInfoButtonText: {
     color: 'white',

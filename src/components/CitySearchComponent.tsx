@@ -18,10 +18,8 @@ const CitySearch: React.FC<CitySearchProps> = ({onCitySelect}) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [cities, setCities] = useState<Array<{name: string; ref: string}>>([]);
 
-  // Use the mutation hook from RTK Query
   const [searchCities, {isLoading}] = useSearchCitiesMutation();
 
-  // Debounce search to avoid too many API calls
   const handleSearch = async (text: string) => {
     setSearchQuery(text);
 
