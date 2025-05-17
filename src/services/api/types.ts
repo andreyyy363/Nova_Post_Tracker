@@ -5,7 +5,6 @@ export type Post = {
   body: string;
 };
 
-// Nova Poshta API general request format
 export interface NovaPoshtaRequest<T> {
   apiKey: string;
   modelName: string;
@@ -13,35 +12,40 @@ export interface NovaPoshtaRequest<T> {
   methodProperties: T;
 }
 
-// City search request properties
 export interface SearchSettlementsProps {
   CityName: string;
   Limit?: number;
   Page?: number;
 }
 
-// City search response
+export interface SettlementAddress {
+  Present: string;
+  Warehouses: number;
+  MainDescription: string;
+  Area: string;
+  Region: string;
+  SettlementTypeCode: string;
+  Ref: string;
+  DeliveryCity: string;
+}
+
 export interface SearchSettlementsResponse {
   success: boolean;
-  data: {
+  data: Array<{
     TotalCount: number;
-    Addresses: Array<{
-      Present: string;
-      Warehouses: number;
-      MainDescription: string;
-      Area: string;
-      Region: string;
-      SettlementTypeCode: string;
-      Ref: string;
-      DeliveryCity: string;
-    }>;
-  }[];
+    Addresses: SettlementAddress[];
+  }>;
   errors: string[];
   warnings: string[];
   info: string[];
 }
 
-// Warehouse type properties
+export enum WarehouseType {
+  BRANCH = '841339c7-591a-42e2-8233-7a0a00f0ed6f',     
+  CARGO = '9a68df70-0267-42a8-bb5c-37f427e36ee4',     
+  POSTOMAT = 'f9316480-5f2d-425d-bc2c-ac7cd29decf0',   
+}
+
 export interface WarehouseProps {
   SettlementRef: string;
   Page?: number;
@@ -50,69 +54,49 @@ export interface WarehouseProps {
   TypeOfWarehouseRef?: string;
 }
 
-// Warehouse types
-export enum WarehouseType {
-  BRANCH = '841339c7-591a-42e2-8233-7a0a00f0ed6f', // Regular post office
-  CARGO = '9a68df70-0267-42a8-bb5c-37f427e36ee4', // Cargo office
-  POSTOMAT = 'f9316480-5f2d-425d-bc2c-ac7cd29decf0', // Postomat
+export interface DaySchedule {
+  Monday: string;
+  Tuesday: string;
+  Wednesday: string;
+  Thursday: string;
+  Friday: string;
+  Saturday: string;
+  Sunday: string;
 }
 
-// Warehouse response type
+export interface WarehouseData {
+  Description: string;
+  ShortAddress: string;
+  Phone: string;
+  Number: string;
+  PlaceMaxWeightAllowed: string;
+  TotalMaxWeightAllowed: string;
+  Reception: DaySchedule;
+  Delivery: DaySchedule;
+  Schedule: DaySchedule;
+  TypeOfWarehouse: string;
+  Ref: string;
+  CityRef: string;
+  CityDescription: string;
+  SettlementRef: string;
+  SettlementDescription: string;
+  SettlementAreaDescription: string;
+  SettlementRegionsDescription: string;
+  SettlementTypeDescription: string;
+  Longitude: string;
+  Latitude: string;
+  PostFinance: string;
+  POSTerminal: string;
+  InternationalShipping: string;
+  SelfServiceWorkplacesCount: string;
+  TotalMaxWeightAllowedOn1Place: string;
+  CanGetMoneyTransfer: string;
+  CanSendMoneyTransfer: string;
+}
+
 export interface WarehouseResponse {
   success: boolean;
-  data: Array<{
-    Description: string;
-    ShortAddress: string;
-    Phone: string;
-    Number: string;
-    PlaceMaxWeightAllowed: string;
-    TotalMaxWeightAllowed: string;
-    Reception: {
-      Monday: string;
-      Tuesday: string;
-      Wednesday: string;
-      Thursday: string;
-      Friday: string;
-      Saturday: string;
-      Sunday: string;
-    };
-    Delivery: {
-      Monday: string;
-      Tuesday: string;
-      Wednesday: string;
-      Thursday: string;
-      Friday: string;
-      Saturday: string;
-      Sunday: string;
-    };
-    Schedule: {
-      Monday: string;
-      Tuesday: string;
-      Wednesday: string;
-      Thursday: string;
-      Friday: string;
-      Saturday: string;
-      Sunday: string;
-    };
-    TypeOfWarehouse: string;
-    Ref: string;
-    CityRef: string;
-    CityDescription: string;
-    SettlementRef: string;
-    SettlementDescription: string;
-    SettlementAreaDescription: string;
-    SettlementRegionsDescription: string;
-    SettlementTypeDescription: string;
-    Longitude: string;
-    Latitude: string;
-    PostFinance: string;
-    POSTerminal: string;
-    InternationalShipping: string;
-    SelfServiceWorkplacesCount: string;
-    TotalMaxWeightAllowedOn1Place: string;
-    CanGetMoneyTransfer: string;
-    CanSendMoneyTransfer: string;
-  }>;
+  data: WarehouseData[];
   errors: string[];
   warnings: string[];
   info: string[];
@@ -120,4 +104,36 @@ export interface WarehouseResponse {
   errorCodes: string[];
   warningCodes: string[];
   infoCodes: string[];
+}
+
+export interface TrackDocumentProps {
+  Documents: Array<{
+    DocumentNumber: string;
+  }>;
+}
+
+export interface TrackDocumentData {
+   Number: string;
+   StatusCode: string;
+   StatusDescription?: string;
+   ScheduledDeliveryDate?: string;
+   WarehouseSenderAddress?: string;
+   WarehouseRecipientAddress?: string;
+   CreatedAt?: string;
+   RecipientFullName?: string;
+   SenderFullName?: string;
+   DocumentWeight?: string;
+   DocumentCost?: string;
+   CargoDescription?: string;
+   CargoDescriptionString?: string;
+   Weight?: string;
+   Cost?: string;
+}
+
+export interface TrackDocumentResponse {
+  success: boolean;
+  data: TrackDocumentData[];
+  errors: string[];
+  warnings: string[];
+  info: string[];
 }
