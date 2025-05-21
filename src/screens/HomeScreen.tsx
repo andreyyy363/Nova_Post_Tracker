@@ -14,7 +14,7 @@ const HomeScreen = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Welcome to Nova Post Tracker</Text>
       <Button
-        title="Go to Track Screen"
+        title="Go to Warehouses"
         onPress={() => navigation.navigate('CitySearch')}
       />
     </View>

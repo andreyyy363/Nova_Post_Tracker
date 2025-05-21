@@ -17,7 +17,7 @@ const renderItem = ({item}: {item: {title: string}}) => (
   </View>
 );
 
-const Track: FC = () => {
+const Warehouse: FC = () => {
   const {data} = useGetAllPostsQuery();
   console.log(data);
 
@@ -33,4 +33,4 @@ const Track: FC = () => {
   );
 };
 
-export default Track;
+export default Warehouse;
