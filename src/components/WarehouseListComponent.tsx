@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import {WarehouseType} from '../services/api/types';
 interface WarehouseListProps {
   cityRef: string;
   onWarehouseSelect?: (warehouse: any) => void;
-  condensedView?: boolean; // new prop for when list is collapsed
+  condensedView?: boolean;
 }
 
 const WarehouseList: React.FC<WarehouseListProps> = ({
@@ -28,36 +28,45 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
   );
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [filteredWarehouses, setFilteredWarehouses] = useState<any[]>([]);
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const {data, isLoading, error} = useGetWarehousesQuery(
     {cityRef},
     {skip: !cityRef},
   );
 
+  // Use memoization for filtering large datasets
   useEffect(() => {
-    if (data?.data) {
-      const filtered = data.data.filter(warehouse => {
-        const matchesType =
-          !selectedType || warehouse.TypeOfWarehouse === selectedType;
+    if (!data?.data) return;
 
-        const query = searchQuery.toLowerCase();
-        const matchesNumber = warehouse.Number.toLowerCase().includes(query);
-        const matchesAddress =
-          warehouse.ShortAddress.toLowerCase().includes(query);
-        const matchesDescription =
-          warehouse.Description.toLowerCase().includes(query);
+    setIsFiltering(true);
 
-        return (
-          matchesType &&
-          (!searchQuery ||
-            matchesNumber ||
-            matchesAddress ||
-            matchesDescription)
-        );
-      });
+    // Use a small timeout to prevent UI blocking during filtering
+    const filterTimeout = setTimeout(() => {
+      try {
+        const filtered = data.data.filter(warehouse => {
+          const matchesType =
+            !selectedType || warehouse.TypeOfWarehouse === selectedType;
 
-      setFilteredWarehouses(filtered);
-    }
+          // Only apply text search if a query exists
+          if (!searchQuery) return matchesType;
+
+          const query = searchQuery.toLowerCase();
+          return (
+            matchesType &&
+            (warehouse.Number.toLowerCase().includes(query) ||
+              warehouse.ShortAddress.toLowerCase().includes(query) ||
+              warehouse.Description.toLowerCase().includes(query))
+          );
+        });
+
+        setFilteredWarehouses(filtered);
+      } finally {
+        setIsFiltering(false);
+      }
+    }, 100);
+
+    return () => clearTimeout(filterTimeout);
   }, [data?.data, selectedType, searchQuery]);
 
   const getDayName = () => {
@@ -82,6 +91,13 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
     {label: 'Cargo Offices', value: WarehouseType.CARGO},
     {label: 'Postomats', value: WarehouseType.POSTOMAT},
   ];
+
+  // Add memo for visible warehouses
+  const visibleWarehouses = useMemo(() => {
+    return condensedView && filteredWarehouses.length > 0
+      ? filteredWarehouses.slice(0, 1)
+      : filteredWarehouses;
+  }, [filteredWarehouses, condensedView]);
 
   if (!cityRef) {
     return <Text style={styles.messageText}>Please select a city first</Text>;
@@ -144,52 +160,47 @@ const WarehouseList: React.FC<WarehouseListProps> = ({
         </View>
       </View>
 
-      {/* Only show results count when in condensed view */}
-      {condensedView ? (
-        <>
-          <Text style={styles.countText}>
-            {filteredWarehouses.length} warehouses found
-          </Text>
-          {filteredWarehouses.length > 0 && (
-            <FlatList
-              data={filteredWarehouses.slice(0, 1)} // Take only the first item
-              keyExtractor={item => item.Ref}
-              renderItem={({item}) => (
-                <WarehouseCard
-                  name={item.Description}
-                  address={item.ShortAddress}
-                  number={item.Number}
-                  schedule={item.Schedule?.[todayName]}
-                  onPress={() => onWarehouseSelect && onWarehouseSelect(item)}
-                />
-              )}
-              contentContainerStyle={[styles.listContent, styles.condensedList]}
-              scrollEnabled={false}
-            />
-          )}
-        </>
-      ) : (
-        <View style={styles.listContainer}>
-          {filteredWarehouses.length === 0 && searchQuery ? (
-            <Text style={styles.messageText}>No matching warehouses found</Text>
-          ) : (
-            <FlatList
-              data={filteredWarehouses}
-              keyExtractor={item => item.Ref}
-              renderItem={({item}) => (
-                <WarehouseCard
-                  name={item.Description}
-                  address={item.ShortAddress}
-                  number={item.Number}
-                  schedule={item.Schedule?.[todayName]}
-                  onPress={() => onWarehouseSelect && onWarehouseSelect(item)}
-                />
-              )}
-              contentContainerStyle={styles.listContent}
-            />
-          )}
+      {/* Filter status */}
+      {isFiltering ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color="#f54b00" />
+          <Text style={styles.loadingText}>Filtering warehouses...</Text>
         </View>
+      ) : (
+        <Text style={styles.countText}>
+          {filteredWarehouses.length} warehouses found
+        </Text>
       )}
+
+      {/* List content */}
+      <View style={styles.listContainer}>
+        {filteredWarehouses.length === 0 && searchQuery && !isFiltering ? (
+          <Text style={styles.messageText}>No matching warehouses found</Text>
+        ) : (
+          <FlatList
+            data={visibleWarehouses}
+            keyExtractor={item => item.Ref}
+            renderItem={({item}) => (
+              <WarehouseCard
+                name={item.Description}
+                address={item.ShortAddress}
+                number={item.Number}
+                schedule={item.Schedule?.[todayName]}
+                onPress={() => onWarehouseSelect && onWarehouseSelect(item)}
+              />
+            )}
+            contentContainerStyle={[
+              styles.listContent,
+              condensedView && styles.condensedList,
+            ]}
+            scrollEnabled={!condensedView}
+            initialNumToRender={10}
+            maxToRenderPerBatch={10}
+            windowSize={10}
+            removeClippedSubviews={true}
+          />
+        )}
+      </View>
     </View>
   );
 };
@@ -270,8 +281,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   condensedList: {
-    maxHeight: 80, // Approximate height of one warehouse card
+    maxHeight: 80,
     paddingHorizontal: 16,
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  loadingText: {
+    marginLeft: 8,
+    color: '#666',
+    fontSize: 14,
   },
 });
 

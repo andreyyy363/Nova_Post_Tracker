@@ -20,7 +20,8 @@
     "react-native-maps-clustering": "^1.2.4",
     "react-native-safe-area-context": "^5.3.0",
     "react-native-screens": "^4.9.2",
-    "react-redux": "^9.2.0"
+    "react-redux": "^9.2.0",
+    "@googlemaps/markerclusterer": "^2.0.15"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
