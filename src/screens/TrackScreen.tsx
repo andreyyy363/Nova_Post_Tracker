@@ -6,8 +6,8 @@ import PhoneInputModal from '../components/tracking/PhoneInputModal';
 import PackageCard from '../components/tracking/PackageCard';
 import TrackingForm from '../components/tracking/TrackingForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Calculator from '../components/calculator/Calculator';
-import CalculatorScreen from './CalculatorScreen';
+// import Calculator from '../components/calculator/Calculator';
+// import CalculatorScreen from './CalculatorScreen';
 import BottomNavigation from '../components/navigation/BottomNavigation';
 
 const SAVED_PACKAGES_KEY = 'saved_packages';
@@ -339,9 +339,9 @@ const getPackageStatus = (packageData: TrackingData): string => {
     </ScrollView>
   );
 
-  const renderCalculatorTab = () => (
-    <CalculatorScreen />
-  );
+  // const renderCalculatorTab = () => (
+  //   <CalculatorScreen />
+  // );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -353,7 +353,15 @@ const getPackageStatus = (packageData: TrackingData): string => {
       
       {activeTab === 'track' ? renderTrackingTab() : 
        activeTab === 'myPackages' ? renderMyPackagesTab() : 
-       renderCalculatorTab()}
+       
+       //renderCalculatorTab()
+       
+       <View style={styles.emptyContainer}>
+         <Text style={styles.emptyMessage}>
+           Калькулятор вартості ще в розробці. Слідкуйте за оновленнями!
+         </Text>
+        </View>
+      }
       
       {/* Use the new BottomNavigation component */}
       <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
