@@ -1,24 +1,27 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { 
-  PriceCalculationRequest, 
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import {
+  PriceCalculationRequest,
   PriceCalculationResponse,
-  InternetDocumentProps
+  InternetDocumentProps,
 } from '../../types/calculator';
 
-const API_KEY = 'ace91b0abee185831f799f25045d9436'; 
+const API_KEY = process.env.API_KEY || '';
 
 export const calculatorApi = createApi({
   reducerPath: 'calculatorApi',
-  baseQuery: fetchBaseQuery({ 
+  baseQuery: fetchBaseQuery({
     baseUrl: 'https://api.novaposhta.ua/v2.0/',
-    prepareHeaders: (headers) => {
+    prepareHeaders: headers => {
       headers.set('Content-Type', 'application/json');
       return headers;
     },
   }),
-  endpoints: (builder) => ({
-    calculateShippingPrice: builder.mutation<PriceCalculationResponse, InternetDocumentProps>({
-      query: (methodProperties) => ({
+  endpoints: builder => ({
+    calculateShippingPrice: builder.mutation<
+      PriceCalculationResponse,
+      InternetDocumentProps
+    >({
+      query: methodProperties => ({
         url: 'json/',
         method: 'POST',
         body: {
@@ -32,4 +35,4 @@ export const calculatorApi = createApi({
   }),
 });
 
-export const { useCalculateShippingPriceMutation } = calculatorApi;
+export const {useCalculateShippingPriceMutation} = calculatorApi;

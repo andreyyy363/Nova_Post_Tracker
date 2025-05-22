@@ -1,7 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity, Alert } from 'react-native';
-import { useTrackDocumentMutation } from '../services/api/api';
-import { TrackingResponse, TrackingData } from '../types/tracking';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import {useTrackDocumentMutation} from '../services/api/api';
+import {TrackingResponse, TrackingData} from '../types/tracking';
 import PhoneInputModal from '../components/tracking/PhoneInputModal';
 import PackageCard from '../components/tracking/PackageCard';
 import TrackingForm from '../components/tracking/TrackingForm';
@@ -15,8 +23,10 @@ const SAVED_PACKAGES_KEY = 'saved_packages';
 const TrackScreen = () => {
   const [trackingNumber, setTrackingNumber] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [trackDocument, { isLoading }] = useTrackDocumentMutation();
-  const [trackingResult, setTrackingResult] = useState<TrackingResponse | null>(null);
+  const [trackDocument, {isLoading}] = useTrackDocumentMutation();
+  const [trackingResult, setTrackingResult] = useState<TrackingResponse | null>(
+    null,
+  );
   const [showFullInfo, setShowFullInfo] = useState(false);
   const [showPhoneModal, setShowPhoneModal] = useState(false);
   const [hasEnteredPhone, setHasEnteredPhone] = useState(false);
@@ -24,8 +34,12 @@ const TrackScreen = () => {
   const [activeTab, setActiveTab] = useState('track');
   const [myPackages, setMyPackages] = useState<TrackingData[]>([]);
   const [isLoadingMyPackages, setIsLoadingMyPackages] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState<TrackingData | null>(null);
-  const [pendingPackage, setPendingPackage] = useState<TrackingData | null>(null);
+  const [selectedPackage, setSelectedPackage] = useState<TrackingData | null>(
+    null,
+  );
+  const [pendingPackage, setPendingPackage] = useState<TrackingData | null>(
+    null,
+  );
   const [isVerifyingPhone, setIsVerifyingPhone] = useState(false);
 
   useEffect(() => {
@@ -54,12 +68,12 @@ const TrackScreen = () => {
 
   const addToMyPackages = (packageData: TrackingData) => {
     const exists = myPackages.some(pkg => pkg.Number === packageData.Number);
-    
+
     if (!exists) {
       const updatedPackages = [...myPackages, packageData];
       setMyPackages(updatedPackages);
       savePackages(updatedPackages);
-      console.log("Посилку додано до збережених:", packageData.Number);
+      console.log('Посилку додано до збережених:', packageData.Number);
     }
   };
 
@@ -68,20 +82,22 @@ const TrackScreen = () => {
       'Видалення посилки',
       'Ви дійсно хочете видалити цю посилку з вашого списку?',
       [
-        { 
-          text: 'Скасувати', 
-          style: 'cancel'
+        {
+          text: 'Скасувати',
+          style: 'cancel',
         },
         {
           text: 'Видалити',
           onPress: () => {
-            const updatedPackages = myPackages.filter(pkg => pkg.Number !== packageNumber);
+            const updatedPackages = myPackages.filter(
+              pkg => pkg.Number !== packageNumber,
+            );
             setMyPackages(updatedPackages);
             savePackages(updatedPackages);
           },
-          style: 'destructive'
-        }
-      ]
+          style: 'destructive',
+        },
+      ],
     );
   };
 
@@ -101,19 +117,19 @@ const TrackScreen = () => {
     if (trackingNumber.trim() === '') {
       return;
     }
-    
+
     try {
       const requestParams = {
         documentNumber: trackingNumber,
-        phone: phoneNum ? phoneNum.replace(/[^0-9]/g, '') : undefined
+        phone: phoneNum ? phoneNum.replace(/[^0-9]/g, '') : undefined,
       };
-      
+
       const result = await trackDocument(requestParams).unwrap();
-      console.log("API response:", JSON.stringify(result, null, 2));
-      
+      console.log('API response:', JSON.stringify(result, null, 2));
+
       if (result && result.success && result.data && result.data.length > 0) {
         setTrackingResult(result as unknown as TrackingResponse);
-        
+
         addToMyPackages(result.data[0]);
       } else {
         setTrackingResult(result as unknown as TrackingResponse);
@@ -123,14 +139,16 @@ const TrackScreen = () => {
       setTrackingResult({
         success: false,
         data: [],
-        errors: ['Помилка при пошуку відправлення. Перевірте номер ТТН та спробуйте ще раз.']
+        errors: [
+          'Помилка при пошуку відправлення. Перевірте номер ТТН та спробуйте ще раз.',
+        ],
       });
     }
   };
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
-    
+
     if (tab === 'myPackages') {
       setSelectedPackage(null);
     }
@@ -140,7 +158,11 @@ const TrackScreen = () => {
     if (showFullInfo) {
       setShowFullInfo(false);
     } else {
-      if (trackingNumber.trim() !== '' && !hasEnteredPhone && activeTab === 'track') {
+      if (
+        trackingNumber.trim() !== '' &&
+        !hasEnteredPhone &&
+        activeTab === 'track'
+      ) {
         setShowPhoneModal(true);
       } else {
         setShowFullInfo(true);
@@ -148,13 +170,16 @@ const TrackScreen = () => {
     }
   };
 
-  const verifyPhoneForPackage = async (packageData: TrackingData, phone: string) => {
+  const verifyPhoneForPackage = async (
+    packageData: TrackingData,
+    phone: string,
+  ) => {
     try {
       const result = await trackDocument({
         documentNumber: packageData.Number,
-        phone: phone.replace(/[^0-9]/g, '')
+        phone: phone.replace(/[^0-9]/g, ''),
       }).unwrap();
-      
+
       if (result && result.success && result.data && result.data.length > 0) {
         return true;
       }
@@ -168,12 +193,15 @@ const TrackScreen = () => {
   const handlePhoneSubmit = async () => {
     if (phoneNumber.trim().length >= 10) {
       setHasEnteredPhone(true);
-      
+
       if (isVerifyingPhone && pendingPackage) {
         setIsLoadingMyPackages(true);
-        const isValid = await verifyPhoneForPackage(pendingPackage, phoneNumber);
+        const isValid = await verifyPhoneForPackage(
+          pendingPackage,
+          phoneNumber,
+        );
         setIsLoadingMyPackages(false);
-        
+
         if (isValid) {
           setSelectedPackage(pendingPackage);
           setPendingPackage(null);
@@ -182,7 +210,7 @@ const TrackScreen = () => {
         } else {
           Alert.alert(
             'Невірний номер телефону',
-            'Введений вами номер не відповідає даній посилці. Перевірте та спробуйте ще раз.'
+            'Введений вами номер не відповідає даній посилці. Перевірте та спробуйте ще раз.',
           );
           return;
         }
@@ -196,32 +224,36 @@ const TrackScreen = () => {
     }
   };
 
-const handlePackageSelect = (packageData: TrackingData) => {
-  setSelectedPackage(packageData);
-}
+  const handlePackageSelect = (packageData: TrackingData) => {
+    setSelectedPackage(packageData);
+  };
 
-const getPackageStatus = (packageData: TrackingData): string => {
-  const status = (packageData as any).Status;
-  const statusDescription = packageData.StatusDescription || (packageData as any).StatusDescription;
-  
-  if (status && status.includes("Інформація прихована")) {
-    return "Посилка в дорозі";
-  }
-  
-  if (statusDescription && statusDescription.includes("Інформація прихована")) {
-    return "Посилка в дорозі";
-  }
-  
-  if (status) return status;
-  if (statusDescription) return statusDescription;
-  if (packageData.StatusCode) return `Статус: ${packageData.StatusCode}`;
-  
-  return 'Статус невідомий';
-};
+  const getPackageStatus = (packageData: TrackingData): string => {
+    const status = (packageData as any).Status;
+    const statusDescription =
+      packageData.StatusDescription || (packageData as any).StatusDescription;
+
+    if (status && status.includes('Інформація прихована')) {
+      return 'Посилка в дорозі';
+    }
+
+    if (
+      statusDescription &&
+      statusDescription.includes('Інформація прихована')
+    ) {
+      return 'Посилка в дорозі';
+    }
+
+    if (status) return status;
+    if (statusDescription) return statusDescription;
+    if (packageData.StatusCode) return `Статус: ${packageData.StatusCode}`;
+
+    return 'Статус невідомий';
+  };
 
   const renderTrackingTab = () => (
     <>
-      <TrackingForm 
+      <TrackingForm
         trackingNumber={trackingNumber}
         setTrackingNumber={handleTrackingNumberChange}
         onTrack={() => {
@@ -233,28 +265,33 @@ const getPackageStatus = (packageData: TrackingData): string => {
         }}
         isLoading={isLoading}
       />
-      
+
       <ScrollView style={styles.scrollView}>
-        {trackingResult && trackingResult.success && trackingResult.data && trackingResult.data.length > 0 && (
-          <View style={styles.resultContainer}>
-            <Text style={styles.sectionTitle}>Інформація про відправлення:</Text>
-            
-            <PackageCard 
-              data={trackingResult.data[0]}
-              isDemo={false}
-              showFullInfo={showFullInfo}
-              hasEnteredPhone={hasEnteredPhone}
-              onFullInfoClick={handleFullInfoClick}
-              onPhoneModalShow={() => setShowPhoneModal(true)}
-            />
-          </View>
-        )}
-        
+        {trackingResult &&
+          trackingResult.success &&
+          trackingResult.data &&
+          trackingResult.data.length > 0 && (
+            <View style={styles.resultContainer}>
+              <Text style={styles.sectionTitle}>
+                Інформація про відправлення:
+              </Text>
+
+              <PackageCard
+                data={trackingResult.data[0]}
+                isDemo={false}
+                showFullInfo={showFullInfo}
+                hasEnteredPhone={hasEnteredPhone}
+                onFullInfoClick={handleFullInfoClick}
+                onPhoneModalShow={() => setShowPhoneModal(true)}
+              />
+            </View>
+          )}
+
         {trackingResult && !trackingResult.success && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              {trackingResult.errors && trackingResult.errors.length > 0 
-                ? trackingResult.errors[0] 
+              {trackingResult.errors && trackingResult.errors.length > 0
+                ? trackingResult.errors[0]
                 : 'Помилка при пошуку відправлення.'}
             </Text>
           </View>
@@ -266,20 +303,21 @@ const getPackageStatus = (packageData: TrackingData): string => {
   const renderMyPackagesTab = () => (
     <ScrollView style={styles.scrollView}>
       <Text style={styles.sectionTitle}>Мої посилки:</Text>
-      
+
       {isLoadingMyPackages ? (
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingMessage}>Завантажуємо ваші посилки...</Text>
+          <Text style={styles.loadingMessage}>
+            Завантажуємо ваші посилки...
+          </Text>
         </View>
       ) : myPackages.length > 0 && !selectedPackage ? (
         // Відображаємо список посилок як кнопок
         <View style={styles.packageButtonsContainer}>
           {myPackages.map((pkg, index) => (
             <View key={pkg.Number || index} style={styles.packageButtonWrapper}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.packageButton}
-                onPress={() => handlePackageSelect(pkg)}
-              >
+                onPress={() => handlePackageSelect(pkg)}>
                 <View style={styles.packageButtonLeft}>
                   <Text style={styles.packageButtonNumber}>№ {pkg.Number}</Text>
                   <Text style={styles.packageButtonStatus}>
@@ -291,28 +329,26 @@ const getPackageStatus = (packageData: TrackingData): string => {
                   <Text style={styles.packageButtonArrow}>›</Text>
                 </View>
               </TouchableOpacity>
-              
+
               {/* Кнопка видалення */}
-              <TouchableOpacity 
-              style={styles.deleteButton}
-              onPress={() => deletePackage(pkg.Number)}
-            >
-              <Text style={styles.deleteButtonText}>🚮</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={() => deletePackage(pkg.Number)}>
+                <Text style={styles.deleteButtonText}>🚮</Text>
+              </TouchableOpacity>
             </View>
           ))}
         </View>
       ) : selectedPackage ? (
         // Відображаємо повну інформацію про вибрану посилку
         <View style={styles.resultContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.backButton}
-            onPress={() => setSelectedPackage(null)}
-          >
+            onPress={() => setSelectedPackage(null)}>
             <Text style={styles.backButtonText}>‹ Назад до списку посилок</Text>
           </TouchableOpacity>
-          
-          <PackageCard 
+
+          <PackageCard
             data={selectedPackage}
             isDemo={false}
             showFullInfo={true}
@@ -325,13 +361,12 @@ const getPackageStatus = (packageData: TrackingData): string => {
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyIcon}>📭</Text>
           <Text style={styles.emptyMessage}>
-            У вас поки немає збережених посилок.
-            Відстежте свою першу посилку на вкладці "Відстеження".
+            У вас поки немає збережених посилок. Відстежте свою першу посилку на
+            вкладці "Відстеження".
           </Text>
           <TouchableOpacity
             style={styles.findPackageButton}
-            onPress={() => setActiveTab('track')}
-          >
+            onPress={() => setActiveTab('track')}>
             <Text style={styles.findPackageButtonText}>Відстежити посилку</Text>
           </TouchableOpacity>
         </View>
@@ -339,25 +374,27 @@ const getPackageStatus = (packageData: TrackingData): string => {
     </ScrollView>
   );
 
-  const renderCalculatorTab = () => (
-    <CalculatorScreen />
-  );
+  const renderCalculatorTab = () => <CalculatorScreen />;
 
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>
-        {activeTab === 'track' ? 'Відстеження відправлень' : 
-         activeTab === 'myPackages' ? 'Мої посилки' : 
-         'Калькулятор вартості'}
+        {activeTab === 'track'
+          ? 'Відстеження відправлень'
+          : activeTab === 'myPackages'
+          ? 'Мої посилки'
+          : 'Калькулятор вартості'}
       </Text>
-      
-      {activeTab === 'track' ? renderTrackingTab() : 
-       activeTab === 'myPackages' ? renderMyPackagesTab() : 
-       renderCalculatorTab()}
-      
+
+      {activeTab === 'track'
+        ? renderTrackingTab()
+        : activeTab === 'myPackages'
+        ? renderMyPackagesTab()
+        : renderCalculatorTab()}
+
       {/* Use the new BottomNavigation component */}
       <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
-      
+
       <PhoneInputModal
         visible={showPhoneModal}
         phoneNumber={phoneNumber}
@@ -466,7 +503,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
@@ -506,7 +543,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: {width: 0, height: 1},
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
@@ -522,7 +559,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF6B08',
     fontWeight: '500',
-  }
+  },
 });
 
 export default TrackScreen;

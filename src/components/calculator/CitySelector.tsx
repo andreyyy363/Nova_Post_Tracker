@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import CitySearchComponent from '../CitySearchComponent';
-import { City } from '../../types/calculator';
+import {City} from '../../types/calculator';
 
 interface CitySelectorProps {
   label: string;
@@ -9,17 +9,17 @@ interface CitySelectorProps {
   onCitySelect: (city: City) => void;
 }
 
-const CitySelector: React.FC<CitySelectorProps> = ({ 
-  label, 
-  selectedCity, 
-  onCitySelect 
+const CitySelector: React.FC<CitySelectorProps> = ({
+  label,
+  selectedCity,
+  onCitySelect,
 }) => {
   const [showSearch, setShowSearch] = useState(false);
 
   const handleSelect = (city: {name: string; ref: string}) => {
     onCitySelect({
       name: city.name,
-      ref: city.ref
+      ref: city.ref,
     });
     setShowSearch(false);
   };
@@ -27,34 +27,31 @@ const CitySelector: React.FC<CitySelectorProps> = ({
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      
+
       {selectedCity ? (
         <View style={styles.selectedCity}>
           <View style={styles.cityNameContainer}>
-            <Text 
-              style={styles.cityName} 
-              numberOfLines={1} 
-              ellipsizeMode="tail"
-            >
+            <Text
+              style={styles.cityName}
+              numberOfLines={1}
+              ellipsizeMode="tail">
               {selectedCity.name}
             </Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.changeButton}
-            onPress={() => setShowSearch(true)}
-          >
+            onPress={() => setShowSearch(true)}>
             <Text style={styles.changeButtonText}>Змінити</Text>
           </TouchableOpacity>
         </View>
       ) : (
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.selectButton}
-          onPress={() => setShowSearch(true)}
-        >
+          onPress={() => setShowSearch(true)}>
           <Text style={styles.selectButtonText}>Обрати місто</Text>
         </TouchableOpacity>
       )}
-      
+
       {showSearch && (
         <View style={styles.searchContainer}>
           <CitySearchComponent onCitySelect={handleSelect} />
@@ -84,7 +81,7 @@ const styles = StyleSheet.create({
   },
   cityNameContainer: {
     flex: 1,
-    marginRight: 10, 
+    marginRight: 10,
   },
   cityName: {
     fontSize: 16,
@@ -95,8 +92,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 4,
-    width: 80, 
-    alignItems: 'center', 
+    width: 80,
+    alignItems: 'center',
   },
   changeButtonText: {
     color: 'white',

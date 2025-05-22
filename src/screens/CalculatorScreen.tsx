@@ -1,15 +1,14 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, ScrollView } from 'react-native';
+import {SafeAreaView, StyleSheet, ScrollView} from 'react-native';
 import Calculator from '../components/calculator/Calculator';
 
 const CalculatorScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView 
-        style={styles.scrollView} 
+      <ScrollView
+        style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <Calculator />
       </ScrollView>
     </SafeAreaView>
@@ -26,8 +25,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-    paddingBottom: 80, 
-  }
+    paddingBottom: 80,
+  },
 });
 
 export default CalculatorScreen;

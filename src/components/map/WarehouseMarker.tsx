@@ -1,7 +1,7 @@
-import React, { forwardRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Marker, Callout } from 'react-native-maps';
-import { openGoogleMapsDirections } from '../../utils/mapUtils';
+import React, {forwardRef} from 'react';
+import {View, Text, StyleSheet} from 'react-native';
+import {Marker, Callout} from 'react-native-maps';
+import {openGoogleMapsDirections} from '../../utils/mapUtils';
 
 interface WarehouseMarkerProps {
   warehouse: {
@@ -15,7 +15,7 @@ interface WarehouseMarkerProps {
 }
 
 const WarehouseMarker = forwardRef<Marker, WarehouseMarkerProps>(
-  ({ warehouse, isSelected = false }, ref) => {
+  ({warehouse, isSelected = false}, ref) => {
     const lat = parseFloat(warehouse.Latitude);
     const lng = parseFloat(warehouse.Longitude);
 
@@ -32,18 +32,20 @@ const WarehouseMarker = forwardRef<Marker, WarehouseMarkerProps>(
         }}
         pinColor={isSelected ? '#00F5F5' : '#f54b00'}
         tracksViewChanges={false}
-        flat={true}
-      >
+        flat={true}>
         <Callout
           tooltip
           tappable={true}
           onPress={() => {
             openGoogleMapsDirections(lat, lng);
-          }}
-        >
+          }}>
           <View style={styles.calloutContainer}>
-            <Text style={styles.calloutTitle}>Nova Post #{warehouse.Number}</Text>
-            <Text style={styles.calloutDescription}>{warehouse.Description}</Text>
+            <Text style={styles.calloutTitle}>
+              Nova Post #{warehouse.Number}
+            </Text>
+            <Text style={styles.calloutDescription}>
+              {warehouse.Description}
+            </Text>
             <View style={styles.calloutButton}>
               <Text style={styles.calloutButtonText}>Navigate</Text>
             </View>
@@ -51,7 +53,7 @@ const WarehouseMarker = forwardRef<Marker, WarehouseMarkerProps>(
         </Callout>
       </Marker>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({
@@ -61,7 +63,7 @@ const styles = StyleSheet.create({
     padding: 12,
     width: 200,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

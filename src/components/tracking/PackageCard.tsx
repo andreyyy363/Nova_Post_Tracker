@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import StatusBadge from './StatusBadge';
-import { TrackingData } from '../../types/tracking';
-import { samplePackage } from '../../constants/sampleData';
+import {TrackingData} from '../../types/tracking';
+import {samplePackage} from '../../constants/sampleData';
 
 interface PackageCardProps {
   data: TrackingData;
@@ -13,13 +13,13 @@ interface PackageCardProps {
   onPhoneModalShow: () => void;
 }
 
-const PackageCard: React.FC<PackageCardProps> = ({ 
-  data, 
-  isDemo, 
-  showFullInfo, 
-  hasEnteredPhone, 
+const PackageCard: React.FC<PackageCardProps> = ({
+  data,
+  isDemo,
+  showFullInfo,
+  hasEnteredPhone,
   onFullInfoClick,
-  onPhoneModalShow
+  onPhoneModalShow,
 }) => {
   const getValueOrDefault = (value: any, defaultValue: string): string => {
     if (value === undefined || value === null) return defaultValue;
@@ -31,55 +31,59 @@ const PackageCard: React.FC<PackageCardProps> = ({
 
   const getSenderInfo = (response: TrackingData): string => {
     if (isDemo) return samplePackage.sender;
-  
+
     if (!response) {
       return 'Інформація недоступна • Дані відсутні';
     }
-  
+
     const senderDesc = (response as any).CounterpartySenderDescription;
     const senderType = (response as any).CounterpartySenderType;
     const senderFullName = (response as any).SenderFullNameEW;
-    
-    if (senderDesc && senderDesc !== "Приватна особа") {
-      if (senderType === "Organization" && senderFullName && senderFullName.trim() !== '') {
+
+    if (senderDesc && senderDesc !== 'Приватна особа') {
+      if (
+        senderType === 'Organization' &&
+        senderFullName &&
+        senderFullName.trim() !== ''
+      ) {
         return `${senderDesc} (контактна особа: ${senderFullName.trim()})`;
       }
       return senderDesc;
     }
-    
+
     if (senderFullName && senderFullName.trim() !== '') {
       return senderFullName.trim();
     }
-    
+
     return 'Інформація прихована • Для повної інформації зверніться до відділення';
   };
 
   const getRecipientInfo = (response: TrackingData): string => {
     if (isDemo) return samplePackage.recipient;
-    
+
     if (!response) {
       return 'Інформація недоступна • Дані відсутні';
     }
-    
+
     const recipientDesc = (response as any).CounterpartyRecipientDescription;
     const recipientFullName = (response as any).RecipientFullName;
     const recipientFullNameEW = (response as any).RecipientFullNameEW;
-    
-    if (recipientDesc && recipientDesc !== "Приватна особа") {
+
+    if (recipientDesc && recipientDesc !== 'Приватна особа') {
       return recipientDesc;
     }
-    
+
     if (recipientFullNameEW && recipientFullNameEW.trim() !== '') {
       return recipientFullNameEW.trim();
     }
-    
+
     if (recipientFullName && recipientFullName.trim() !== '') {
       return recipientFullName.trim();
     }
-    
+
     return 'Інформація прихована • Для повної інформації зверніться до відділення';
   };
-  
+
   return (
     <View style={styles.packageCard}>
       <View style={styles.packageHeader}>
@@ -91,7 +95,7 @@ const PackageCard: React.FC<PackageCardProps> = ({
           <Text style={styles.packageIconText}>📦</Text>
         </View>
       </View>
-      
+
       <View style={styles.packageDetails}>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Звідки:</Text>
@@ -102,117 +106,111 @@ const PackageCard: React.FC<PackageCardProps> = ({
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Куди:</Text>
           <Text style={styles.detailValue}>
-            {getValueOrDefault(data.WarehouseRecipientAddress, samplePackage.to)}
+            {getValueOrDefault(
+              data.WarehouseRecipientAddress,
+              samplePackage.to,
+            )}
           </Text>
         </View>
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>Очікувана доставка:</Text>
           <Text style={styles.detailValue}>
-            {getValueOrDefault(data.ScheduledDeliveryDate, samplePackage.estimatedDelivery)}
+            {getValueOrDefault(
+              data.ScheduledDeliveryDate,
+              samplePackage.estimatedDelivery,
+            )}
           </Text>
         </View>
-        
+
         {!showFullInfo && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.fullInfoButton}
-            onPress={onFullInfoClick}
-          >
-            <Text style={styles.fullInfoButtonText}>
-              Повна інформація
-            </Text>
+            onPress={onFullInfoClick}>
+            <Text style={styles.fullInfoButtonText}>Повна інформація</Text>
           </TouchableOpacity>
         )}
-        
+
         {showFullInfo && (
           <>
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Створено:</Text>
               <Text style={styles.detailValue}>
-                {isDemo 
-                  ? samplePackage.created 
+                {isDemo
+                  ? samplePackage.created
                   : getValueOrDefault(
-                      data.CreatedAt || 
-                      data.DateCreated || 
-                      (data as any).CreateTime,
-                      'Не вказано'
+                      data.CreatedAt ||
+                        data.DateCreated ||
+                        (data as any).CreateTime,
+                      'Не вказано',
                     )}
               </Text>
             </View>
-            
+
             {(hasEnteredPhone || isDemo) && (
               <>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Відправник:</Text>
-                  <Text style={styles.detailValue}>
-                    {getSenderInfo(data)}
-                  </Text>
+                  <Text style={styles.detailValue}>{getSenderInfo(data)}</Text>
                 </View>
-                
+
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Отримувач:</Text>
                   <Text style={styles.detailValue}>
                     {getRecipientInfo(data)}
                   </Text>
                 </View>
-                
+
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Вага:</Text>
                   <Text style={styles.detailValue}>
-                    {isDemo 
-                      ? samplePackage.weight 
+                    {isDemo
+                      ? samplePackage.weight
                       : getValueOrDefault(
-                          data.DocumentWeight || 
-                          data.Weight, 
-                          'Не вказано'
+                          data.DocumentWeight || data.Weight,
+                          'Не вказано',
                         )}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Оголошена вартість:</Text>
                   <Text style={styles.detailValue}>
-                    {isDemo 
-                      ? samplePackage.price 
+                    {isDemo
+                      ? samplePackage.price
                       : getValueOrDefault(
-                          data.DocumentCost || 
-                          data.Cost || 
-                          data.AnnouncedPrice,
-                          'Не вказано'
+                          data.DocumentCost || data.Cost || data.AnnouncedPrice,
+                          'Не вказано',
                         )}
                   </Text>
                 </View>
                 <View style={styles.detailRow}>
                   <Text style={styles.detailLabel}>Опис:</Text>
                   <Text style={styles.detailValue}>
-                    {isDemo 
-                      ? samplePackage.description 
+                    {isDemo
+                      ? samplePackage.description
                       : getValueOrDefault(
-                          data.CargoDescription || 
-                          (data as any).CargoDescriptionString, 
-                          'Не вказано'
+                          data.CargoDescription ||
+                            (data as any).CargoDescriptionString,
+                          'Не вказано',
                         )}
                   </Text>
                 </View>
               </>
             )}
-            
+
             {!hasEnteredPhone && !isDemo && (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.phonePromptButton}
-                onPress={onPhoneModalShow}
-              >
+                onPress={onPhoneModalShow}>
                 <Text style={styles.phonePromptText}>
                   Введіть номер телефону для отримання повної інформації
                 </Text>
               </TouchableOpacity>
             )}
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={[styles.fullInfoButton, styles.hideInfoButton]}
-              onPress={onFullInfoClick}
-            >
-              <Text style={styles.fullInfoButtonText}>
-                Сховати деталі
-              </Text>
+              onPress={onFullInfoClick}>
+              <Text style={styles.fullInfoButtonText}>Сховати деталі</Text>
             </TouchableOpacity>
           </>
         )}
@@ -227,7 +225,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

@@ -1,7 +1,7 @@
 export interface TrackingData {
   Number: string;
   StatusCode: string;
-  StatusDescription?: string; 
+  StatusDescription?: string;
   ScheduledDeliveryDate?: string;
   WarehouseSenderAddress?: string;
   WarehouseRecipientAddress?: string;

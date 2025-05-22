@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 
 interface ServiceTypeSelectorProps {
   selectedType: string;
@@ -8,35 +8,33 @@ interface ServiceTypeSelectorProps {
 
 const ServiceTypeSelector: React.FC<ServiceTypeSelectorProps> = ({
   selectedType,
-  onSelect
+  onSelect,
 }) => {
   const serviceTypes = [
-    { id: 'WarehouseWarehouse', label: 'Відділення → Відділення' },
-    { id: 'WarehouseDoors', label: 'Відділення → Адреса' },
-    { id: 'DoorsWarehouse', label: 'Адреса → Відділення' },
-    { id: 'DoorsDoors', label: 'Адреса → Адреса' },
+    {id: 'WarehouseWarehouse', label: 'Відділення → Відділення'},
+    {id: 'WarehouseDoors', label: 'Відділення → Адреса'},
+    {id: 'DoorsWarehouse', label: 'Адреса → Відділення'},
+    {id: 'DoorsDoors', label: 'Адреса → Адреса'},
   ];
 
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Тип доставки</Text>
-      
+
       <View style={styles.buttonContainer}>
-        {serviceTypes.map((type) => (
+        {serviceTypes.map(type => (
           <TouchableOpacity
             key={type.id}
             style={[
               styles.typeButton,
-              selectedType === type.id && styles.selectedButton
+              selectedType === type.id && styles.selectedButton,
             ]}
-            onPress={() => onSelect(type.id)}
-          >
+            onPress={() => onSelect(type.id)}>
             <Text
               style={[
                 styles.typeText,
-                selectedType === type.id && styles.selectedText
-              ]}
-            >
+                selectedType === type.id && styles.selectedText,
+              ]}>
               {type.label}
             </Text>
           </TouchableOpacity>

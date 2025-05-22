@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import {View, Text, StyleSheet, TextInput} from 'react-native';
 
 interface WeightInputProps {
   weight: string;
@@ -16,7 +16,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
   seatsAmount,
   setSeatsAmount,
   declaredValue,
-  setDeclaredValue
+  setDeclaredValue,
 }) => {
   return (
     <View style={styles.container}>
@@ -30,7 +30,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
           placeholder="0.1"
         />
       </View>
-      
+
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Кількість місць</Text>
         <TextInput
@@ -41,7 +41,7 @@ const WeightInput: React.FC<WeightInputProps> = ({
           placeholder="1"
         />
       </View>
-      
+
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Оголошена вартість (грн)</Text>
         <TextInput

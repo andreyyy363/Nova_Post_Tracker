@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput } from 'react-native';
+import {View, Text, StyleSheet, TextInput} from 'react-native';
 
 interface DimensionsInputProps {
   length: string;
@@ -16,13 +16,15 @@ const DimensionsInput: React.FC<DimensionsInputProps> = ({
   height,
   setLength,
   setWidth,
-  setHeight
+  setHeight,
 }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.sectionTitle}>Габарити (см)</Text>
-      <Text style={styles.subtitle}>Необов'язково. Додайте, щоб розрахувати об'ємну вагу</Text>
-      
+      <Text style={styles.subtitle}>
+        Необов'язково. Додайте, щоб розрахувати об'ємну вагу
+      </Text>
+
       <View style={styles.dimensionsRow}>
         <View style={styles.dimensionInput}>
           <Text style={styles.dimensionLabel}>Довжина</Text>
@@ -34,7 +36,7 @@ const DimensionsInput: React.FC<DimensionsInputProps> = ({
             placeholder="0"
           />
         </View>
-        
+
         <View style={styles.dimensionInput}>
           <Text style={styles.dimensionLabel}>Ширина</Text>
           <TextInput
@@ -45,7 +47,7 @@ const DimensionsInput: React.FC<DimensionsInputProps> = ({
             placeholder="0"
           />
         </View>
-        
+
         <View style={styles.dimensionInput}>
           <Text style={styles.dimensionLabel}>Висота</Text>
           <TextInput

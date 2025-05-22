@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { PackageService } from '../../services/api/PackageService';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from 'react-native';
+import {PackageService} from '../../services/api/PackageService';
 
 interface TrackingFormProps {
   trackingNumber: string;
@@ -11,13 +19,13 @@ interface TrackingFormProps {
   setErrorMessage?: (message: string) => void;
 }
 
-const TrackingForm: React.FC<TrackingFormProps> = ({ 
-  trackingNumber, 
-  setTrackingNumber, 
-  onTrack, 
+const TrackingForm: React.FC<TrackingFormProps> = ({
+  trackingNumber,
+  setTrackingNumber,
+  onTrack,
   isLoading,
   errorMessage,
-  setErrorMessage
+  setErrorMessage,
 }) => {
   const [localError, setLocalError] = useState<string>('');
   const [isValid, setIsValid] = useState<boolean>(true);
@@ -27,7 +35,7 @@ const TrackingForm: React.FC<TrackingFormProps> = ({
       const validation = PackageService.validateTrackingNumber(trackingNumber);
       setIsValid(validation.isValid);
       setLocalError(validation.isValid ? '' : validation.message);
-      
+
       if (setErrorMessage) {
         setErrorMessage(validation.isValid ? '' : validation.message);
       }
@@ -53,17 +61,22 @@ const TrackingForm: React.FC<TrackingFormProps> = ({
     <>
       <View style={styles.inputContainer}>
         <TextInput
-          style={[styles.input, !isValid && trackingNumber.trim() ? styles.inputError : null]}
+          style={[
+            styles.input,
+            !isValid && trackingNumber.trim() ? styles.inputError : null,
+          ]}
           placeholder="Введіть номер накладної"
           value={trackingNumber}
           onChangeText={setTrackingNumber}
           keyboardType="numeric"
         />
-        <TouchableOpacity 
-          style={[styles.trackButton, (!isValid || !trackingNumber.trim()) ? styles.disabledButton : null]}
+        <TouchableOpacity
+          style={[
+            styles.trackButton,
+            !isValid || !trackingNumber.trim() ? styles.disabledButton : null,
+          ]}
           onPress={handleTrack}
-          disabled={isLoading || !isValid || !trackingNumber.trim()}
-        >
+          disabled={isLoading || !isValid || !trackingNumber.trim()}>
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
@@ -71,8 +84,8 @@ const TrackingForm: React.FC<TrackingFormProps> = ({
           )}
         </TouchableOpacity>
       </View>
-      
-      {(localError && trackingNumber.trim()) ? (
+
+      {localError && trackingNumber.trim() ? (
         <Text style={styles.errorText}>{localError}</Text>
       ) : errorMessage ? (
         <Text style={styles.errorText}>{errorMessage}</Text>
@@ -99,7 +112,7 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: '#FF3B30',
-    borderWidth: 2, 
+    borderWidth: 2,
   },
   trackButton: {
     backgroundColor: '#FF6B08',
@@ -118,8 +131,8 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: '#FF3B30',
-    fontSize: 14, 
-    fontWeight: 'bold', 
+    fontSize: 14,
+    fontWeight: 'bold',
     marginHorizontal: 16,
     marginBottom: 12,
     backgroundColor: '#FFF0F0',

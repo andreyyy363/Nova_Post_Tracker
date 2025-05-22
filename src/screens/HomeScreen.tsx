@@ -18,11 +18,10 @@ const HomeScreen = () => {
         title="Search City"
         onPress={() => navigation.navigate('CitySearch')}
       />
-      
-      <TouchableOpacity 
+
+      <TouchableOpacity
         style={styles.trackButton}
-        onPress={() => navigation.navigate('Track')}
-      >
+        onPress={() => navigation.navigate('Track')}>
         <Text style={styles.buttonText}>Статуси відправлень</Text>
       </TouchableOpacity>
     </View>
@@ -42,7 +41,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-
   trackButton: {
     backgroundColor: '#FF6B08',
     paddingVertical: 12,
@@ -61,4 +59,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-

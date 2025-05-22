@@ -1,12 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { trackingStatuses } from '../../constants/statusCodes';
+import {View, Text, StyleSheet} from 'react-native';
+import {trackingStatuses} from '../../constants/statusCodes';
 
 interface StatusBadgeProps {
   statusCode: string;
 }
 
-const StatusBadge: React.FC<StatusBadgeProps> = ({ statusCode }) => {
+const StatusBadge: React.FC<StatusBadgeProps> = ({statusCode}) => {
   const getStatusDescription = (code: string): string => {
     const status = trackingStatuses.find(s => s.code.toString() === code);
     return status ? status.description : 'Неизвестный статус';

@@ -1,5 +1,5 @@
-import { Region } from 'react-native-maps';
-import { Platform, Linking } from 'react-native';
+import {Region} from 'react-native-maps';
+import {Platform, Linking} from 'react-native';
 
 /**
  * Checks if a geographical point is within the current map viewport
@@ -60,7 +60,7 @@ export const openGoogleMapsDirections = (lat: number, lng: number): void => {
       if (supported) {
         return Linking.openURL(googleMapsUrl);
       } else {
-        const scheme = Platform.select({ ios: 'maps://', android: 'geo:' });
+        const scheme = Platform.select({ios: 'maps://', android: 'geo:'});
         const url = Platform.select({
           ios: `${scheme}?q=${lat},${lng}`,
           android: `${scheme}${lat},${lng}`,
