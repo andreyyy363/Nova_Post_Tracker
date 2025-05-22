@@ -1,46 +1,76 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 
 interface BottomNavigationProps {
   activeTab: string;
   onTabChange: (tab: string) => void;
 }
 
-const BottomNavigation: React.FC<BottomNavigationProps> = ({ activeTab, onTabChange }) => {
+const BottomNavigation: React.FC<BottomNavigationProps> = ({
+  activeTab,
+  onTabChange,
+}) => {
   return (
     <View style={styles.bottomNav}>
-      <TouchableOpacity 
-        style={[styles.tabButton, activeTab === 'track' && styles.activeTab]} 
-        onPress={() => onTabChange('track')}
-      >
-        <Text style={[styles.tabIcon, activeTab === 'track' && styles.activeTabIcon]}>
+      <TouchableOpacity
+        style={[styles.tabButton, activeTab === 'track' && styles.activeTab]}
+        onPress={() => onTabChange('track')}>
+        <Text
+          style={[
+            styles.tabIcon,
+            activeTab === 'track' && styles.activeTabIcon,
+          ]}>
           🔍
         </Text>
-        <Text style={[styles.tabText, activeTab === 'track' && styles.activeTabText]}>
+        <Text
+          style={[
+            styles.tabText,
+            activeTab === 'track' && styles.activeTabText,
+          ]}>
           Відстеження
         </Text>
       </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={[styles.tabButton, activeTab === 'myPackages' && styles.activeTab]} 
-        onPress={() => onTabChange('myPackages')}
-      >
-        <Text style={[styles.tabIcon, activeTab === 'myPackages' && styles.activeTabIcon]}>
+
+      <TouchableOpacity
+        style={[
+          styles.tabButton,
+          activeTab === 'myPackages' && styles.activeTab,
+        ]}
+        onPress={() => onTabChange('myPackages')}>
+        <Text
+          style={[
+            styles.tabIcon,
+            activeTab === 'myPackages' && styles.activeTabIcon,
+          ]}>
           📦
         </Text>
-        <Text style={[styles.tabText, activeTab === 'myPackages' && styles.activeTabText]}>
+        <Text
+          style={[
+            styles.tabText,
+            activeTab === 'myPackages' && styles.activeTabText,
+          ]}>
           Мої посилки
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={[styles.tabButton, activeTab === 'calculator' && styles.activeTab]} 
-        onPress={() => onTabChange('calculator')}
-      >
-        <Text style={[styles.tabIcon, activeTab === 'calculator' && styles.activeTabIcon]}>
+      <TouchableOpacity
+        style={[
+          styles.tabButton,
+          activeTab === 'calculator' && styles.activeTab,
+        ]}
+        onPress={() => onTabChange('calculator')}>
+        <Text
+          style={[
+            styles.tabIcon,
+            activeTab === 'calculator' && styles.activeTabIcon,
+          ]}>
           🧮
         </Text>
-        <Text style={[styles.tabText, activeTab === 'calculator' && styles.activeTabText]}>
+        <Text
+          style={[
+            styles.tabText,
+            activeTab === 'calculator' && styles.activeTabText,
+          ]}>
           Калькулятор
         </Text>
       </TouchableOpacity>

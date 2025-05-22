@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  Modal,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
 
 interface PhoneInputModalProps {
   visible: boolean;
@@ -14,22 +21,22 @@ const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
   phoneNumber,
   setPhoneNumber,
   onClose,
-  onSubmit
+  onSubmit,
 }) => {
   return (
     <Modal
       visible={visible}
       transparent={true}
       animationType="fade"
-      onRequestClose={onClose}
-    >
+      onRequestClose={onClose}>
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Введіть номер телефону</Text>
           <Text style={styles.modalDescription}>
-            Для отримання повної інформації про відправлення необхідно ввести номер телефону отримувача або відправника
+            Для отримання повної інформації про відправлення необхідно ввести
+            номер телефону отримувача або відправника
           </Text>
-          
+
           <TextInput
             style={styles.phoneInput}
             placeholder="0991234567"
@@ -38,19 +45,17 @@ const PhoneInputModal: React.FC<PhoneInputModalProps> = ({
             keyboardType="phone-pad"
             maxLength={13}
           />
-          
+
           <View style={styles.modalButtons}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.modalCancelButton}
-              onPress={onClose}
-            >
+              onPress={onClose}>
               <Text style={styles.modalCancelText}>Скасувати</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity 
+
+            <TouchableOpacity
               style={styles.modalSubmitButton}
-              onPress={onSubmit}
-            >
+              onPress={onSubmit}>
               <Text style={styles.modalSubmitText}>Підтвердити</Text>
             </TouchableOpacity>
           </View>

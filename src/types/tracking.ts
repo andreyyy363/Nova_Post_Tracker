@@ -36,4 +36,3 @@ export interface TrackingResponse {
   success: boolean;
   data: TrackingData[];
   errors?: string[];
-}
