@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Dimensions,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import CitySearch from '../components/CitySearchComponent';
 import WarehouseList from '../components/WarehouseListComponent';
@@ -38,6 +39,7 @@ const CitySearchScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <Text style={styles.header}>Відділення Нової пошти</Text>
       <View style={styles.searchContainer}>
         <CitySearch onCitySelect={handleCitySelect} />
       </View>
@@ -82,7 +84,14 @@ const CitySearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5FCFF',
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginVertical: 20,
+    color: '#333',
   },
   searchContainer: {
     padding: 16,

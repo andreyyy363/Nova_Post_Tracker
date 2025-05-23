@@ -14,9 +14,6 @@ import PhoneInputModal from '../components/tracking/PhoneInputModal';
 import PackageCard from '../components/tracking/PackageCard';
 import TrackingForm from '../components/tracking/TrackingForm';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Calculator from '../components/calculator/Calculator';
-import CalculatorScreen from './CalculatorScreen';
-import BottomNavigation from '../components/navigation/BottomNavigation';
 
 const SAVED_PACKAGES_KEY = 'saved_packages';
 
@@ -374,26 +371,41 @@ const TrackScreen = () => {
     </ScrollView>
   );
 
-  const renderCalculatorTab = () => <CalculatorScreen />;
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>
         {activeTab === 'track'
           ? 'Відстеження відправлень'
-          : activeTab === 'myPackages'
-          ? 'Мої посилки'
-          : 'Калькулятор вартості'}
+          : 'Мої посилки'}
       </Text>
 
-      {activeTab === 'track'
-        ? renderTrackingTab()
-        : activeTab === 'myPackages'
-        ? renderMyPackagesTab()
-        : renderCalculatorTab()}
+      {/* Tab selector for track vs. my packages */}
+      <View style={styles.tabSelector}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'track' && styles.activeTab]}
+          onPress={() => handleTabChange('track')}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'track' && styles.activeTabText,
+            ]}>
+            Відстеження
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'myPackages' && styles.activeTab]}
+          onPress={() => handleTabChange('myPackages')}>
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === 'myPackages' && styles.activeTabText,
+            ]}>
+            Мої посилки
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Use the new BottomNavigation component */}
-      <BottomNavigation activeTab={activeTab} onTabChange={handleTabChange} />
+      {activeTab === 'track' ? renderTrackingTab() : renderMyPackagesTab()}
 
       <PhoneInputModal
         visible={showPhoneModal}
@@ -559,6 +571,30 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FF6B08',
     fontWeight: '500',
+  },
+  tabSelector: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 16,
+    borderRadius: 8,
+    overflow: 'hidden',
+    backgroundColor: '#f0f0f0',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  activeTab: {
+    backgroundColor: '#FF6B08',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#666',
+  },
+  activeTabText: {
+    color: '#fff',
   },
 });
 
